@@ -1,0 +1,10 @@
+version: '3'
+services:
+  api:
+    build: .
+    container_name: rudder-api
+    image: tjlaekem/rudder-api:latest
+    ports:
+      - 80:80
+    volumes:
+      - .:/app

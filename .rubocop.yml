@@ -1,0 +1,11 @@
+AllCops:
+  EnabledByDefault: true
+
+Lint/ConstantResolution:
+  Enabled: false
+
+Style/Copyright:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
