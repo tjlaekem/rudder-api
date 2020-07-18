@@ -1,0 +1,36 @@
+version: 2.1
+
+executors:
+  ruby:
+    docker:
+      - image: circleci/ruby:2.6.3-stretch
+
+jobs:
+  build:
+    executor: ruby
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /home/circleci/project
+      - run: make install
+      - persist_to_workspace:
+          root: /home/circleci/project
+          paths:
+            - bundle
+
+  lint:
+    executor: ruby
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /home/circleci/project
+      - run: make lint
+
+workflows:
+  version: 2
+  test_build_deploy:
+    jobs:
+      - install
+      - lint:
+          requires:
+            - install
