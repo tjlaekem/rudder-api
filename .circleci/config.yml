@@ -6,7 +6,7 @@ executors:
       - image: circleci/ruby:2.6.3-stretch
 
 jobs:
-  build:
+  install:
     executor: ruby
     steps:
       - checkout
