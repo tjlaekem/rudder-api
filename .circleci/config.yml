@@ -1,0 +1,20 @@
+version: 2.1
+
+executors:
+  ruby:
+    docker:
+      - image: circleci/ruby:2.6.3-stretch
+
+jobs:
+  lint:
+    executor: ruby
+    steps:
+      - checkout
+      - run: make install
+      - run: make lint
+
+workflows:
+  version: 2
+  test_build_deploy:
+    jobs:
+      - lint

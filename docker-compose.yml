@@ -1,0 +1,25 @@
+version: '3'
+services:
+  db:
+    container_name: rudder-db
+    env_file:
+      - db.env
+    image: mongo:4.2.8
+    networks:
+      - rudder
+
+  api:
+    build: .
+    container_name: rudder-api
+    image: tjlaekem/rudder-api:latest
+    links:
+      - db
+    networks:
+      - rudder
+    ports:
+      - 80:80
+    volumes:
+      - .:/app
+
+networks:
+  rudder:
