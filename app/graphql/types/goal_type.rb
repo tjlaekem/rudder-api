@@ -4,6 +4,6 @@ module Types
   class GoalType < Types::BaseObject
     field :id, ID, null: false
     field :text, String, null: false
-    field :isAchieved, Boolean, null: false
+    field :is_achieved, Boolean, null: false
   end
 end
