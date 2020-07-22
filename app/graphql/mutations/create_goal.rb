@@ -2,16 +2,16 @@
 
 module Mutations
   class CreateGoal < BaseMutation
+    argument :sprint_id, ID, required: true
     argument :text, String, required: true
-    argument :is_achieved, Boolean, required: true
 
-    type Types::GoalType
+    type Types::SprintType
 
-    def resolve(text: nil, is_achieved: nil)
-      Goal.create!(
-        text: text,
-        is_achieved: is_achieved
-      )
+    def resolve(sprint_id: nil, text: nil)
+      sprint = Sprint.find(sprint_id)
+      goal = Goal.new(text: text)
+      sprint.goals.push(goal)
+      return sprint
     end
   end
 end

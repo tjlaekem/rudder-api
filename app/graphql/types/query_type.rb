@@ -2,9 +2,9 @@
 
 module Types
   class QueryType < Types::BaseObject
-    field :goals, [GoalType], null: false
-    def goals
-      Goal.all
+    field :sprints, [SprintType], null: false
+    def sprints
+      Sprint.all
     end
   end
 end
