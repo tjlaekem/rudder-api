@@ -11,7 +11,7 @@ module Mutations
       sprint = Sprint.find(sprint_id)
       goal = Goal.new(text: text)
       sprint.goals.push(goal)
-      return sprint
+      sprint
     end
   end
 end
