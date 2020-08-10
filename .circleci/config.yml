@@ -5,7 +5,27 @@ executors:
     docker:
       - image: circleci/ruby:2.6.3-stretch
 
+  publisher:
+    docker:
+      - image: circleci/buildpack-deps:stretch
+
 jobs:
+  build_image:
+    executor: publisher
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: build and tag
+          command: docker build . -t tjlaekem/rudder-api:latest
+      - run:
+          name: save image
+          command: docker save -o image.tar tjlaekem/rudder-api:latest
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./image.tar
+
   lint:
     executor: ruby
     steps:
@@ -13,8 +33,29 @@ jobs:
       - run: make install
       - run: make lint
 
+  publish_image:
+    executor: publisher
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - setup_remote_docker
+      - run:
+          name: load image
+          command: docker load -i /tmp/workspace/image.tar
+      - run:
+          name: login to docker hub
+          command: echo $DOCKERHUB_PASSWORD | docker login -u tjlaekem --password-stdin
+      - run:
+          name: publish image
+          command: docker push tjlaekem/rudder-api:latest
+
 workflows:
   version: 2
   test_build_deploy:
     jobs:
+      - build_image
       - lint
+      - publish_image:
+          requires:
+            - build_image
+            - lint
