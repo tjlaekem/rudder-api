@@ -26,6 +26,16 @@ jobs:
           paths:
             - ./image.tar
 
+  deploy_image:
+    executor: publisher
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "19:80:b0:e2:2f:d6:c6:3d:f7:e2:3b:b5:1f:5e:e2:62"
+      - run:
+          name: deploy to vm
+          command: ssh -o "StrictHostKeyChecking no" tjlaekem@35.225.226.232 "docker-compose pull && docker-compose stop && docker-compose up -d"
+
   lint:
     executor: ruby
     steps:
@@ -59,3 +69,6 @@ workflows:
           requires:
             - build_image
             - lint
+      - deploy_image:
+          requires:
+            - publish_image
