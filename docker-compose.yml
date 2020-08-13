@@ -11,6 +11,8 @@ services:
   api:
     build: .
     container_name: rudder-api
+    environment:
+      - RAILS_ENV=production
     image: tjlaekem/rudder-api:latest
     links:
       - db
