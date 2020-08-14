@@ -5,7 +5,37 @@ executors:
     docker:
       - image: circleci/ruby:2.6.3-stretch
 
+  publisher:
+    docker:
+      - image: circleci/buildpack-deps:stretch
+
 jobs:
+  build_image:
+    executor: publisher
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: build and tag
+          command: docker build . -t tjlaekem/rudder-api:latest
+      - run:
+          name: save image
+          command: docker save -o image.tar tjlaekem/rudder-api:latest
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./image.tar
+
+  deploy_image:
+    executor: publisher
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "19:80:b0:e2:2f:d6:c6:3d:f7:e2:3b:b5:1f:5e:e2:62"
+      - run:
+          name: deploy to vm
+          command: ssh -o "StrictHostKeyChecking no" tjlaekem@35.225.226.232 "docker-compose pull && docker-compose stop && docker-compose up -d"
+
   lint:
     executor: ruby
     steps:
@@ -13,8 +43,38 @@ jobs:
       - run: make install
       - run: make lint
 
+  publish_image:
+    executor: publisher
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - setup_remote_docker
+      - run:
+          name: load image
+          command: docker load -i /tmp/workspace/image.tar
+      - run:
+          name: login to docker hub
+          command: echo $DOCKERHUB_PASSWORD | docker login -u tjlaekem --password-stdin
+      - run:
+          name: publish image
+          command: docker push tjlaekem/rudder-api:latest
+
 workflows:
   version: 2
   test_build_deploy:
     jobs:
+      - build_image
       - lint
+      - publish_image:
+          filters:
+            branches:
+              only: master
+          requires:
+            - build_image
+            - lint
+      - deploy_image:
+          filters:
+            branches:
+              only: master
+          requires:
+            - publish_image
