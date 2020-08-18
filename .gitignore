@@ -32,6 +32,12 @@
 /config/master.key
 
 vendor
+log
+public
+tmp
 
 *.swp
 *.swo
+
+api.env
+db.env
