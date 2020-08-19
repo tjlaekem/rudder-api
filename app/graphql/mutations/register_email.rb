@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-require('digest')
-require('MailchimpMarketing')
+require("#{Rails.root}/lib/email_marketing")
 
 module Mutations
   class RegisterEmail < BaseMutation
@@ -10,20 +9,9 @@ module Mutations
     type String
 
     def resolve(email: nil)
-      mailchimp = MailchimpMarketing::Client.new
-      mailchimp.set_config({
-                             api_key: ENV['MAILCHIMP_API_KEY'],
-                             server: ENV['MAILCHIMP_SERVER']
-                           })
       begin
-        mailchimp.lists.add_list_member(
-          ENV['MAILCHIMP_WAITING_LIST_AUDIENCE'],
-          {
-            email_address: email,
-            status: 'pending'
-          }
-        )
-      rescue MailchimpMarketing::ApiError
+        EmailMarketing.subscribe(email)
+      rescue EmailMarketing::SubscriptionError
         raise(GraphQL::ExecutionError, "Could not add '#{email}' to waiting list")
       end
       "Added '#{email}' to waiting list"
