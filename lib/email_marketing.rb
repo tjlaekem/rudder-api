@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require('MailchimpMarketing')
 
 module EmailMarketing
-  def subscribe(email)
+  def self.subscribe(email)
     mailchimp = MailchimpMarketing::Client.new
     mailchimp.set_config({
                            api_key: ENV['MAILCHIMP_API_KEY'],
@@ -19,7 +21,6 @@ module EmailMarketing
       raise(SubscriptionError)
     end
   end
-  module_function :subscribe
 
   class SubscriptionError < StandardError
   end

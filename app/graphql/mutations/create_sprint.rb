@@ -8,6 +8,7 @@ module Mutations
 
     def resolve(end_date: nil)
       Sprint.create!(
+        authorized_users: [context[:user]],
         end_date: end_date
       )
     end
