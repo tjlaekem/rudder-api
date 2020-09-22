@@ -6,6 +6,7 @@ module Types
     field :create_sprint, mutation: Mutations::CreateSprint
     field :delete_goal, mutation: Mutations::DeleteGoal
     field :delete_sprint, mutation: Mutations::DeleteSprint
+    field :delete_sprints, mutation: Mutations::DeleteSprints
     field :register_email, mutation: Mutations::RegisterEmail
     field :update_goal, mutation: Mutations::UpdateGoal
   end
